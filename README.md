@@ -1,183 +1,372 @@
-# PDF to Markdown Converter - PDFstract
+# PDFStract - PDF Extraction & Conversion
 
-A beautiful web application built with FastAPI and HTML that converts PDF files to Markdown format using various conversion libraries.
+A modern web application for converting PDFs to multiple formats using various state-of-the-art extraction libraries. Built with **FastAPI** backend and **React** frontend with a beautiful, responsive UI.
 
 ![UI Screenshot](UI.png)
 
-## Features
+## ✨ Features
 
-- 🚀 **Multiple Conversion Libraries**: Support for `pymupdf4llm`, `markitdown`, `marker`, and `docling`
-- 📱 **Modern UI**: Beautiful, responsive design with drag-and-drop file upload
-- ⚡ **Fast Processing**: Efficient backend processing with real-time feedback
-- 🔄 **Library Status**: Dynamic checking of available libraries
-- 📄 **Preview Results**: View converted Markdown content directly in the browser
+- 🚀 **10+ Conversion Libraries**: PyMuPDF4LLM, MarkItDown, Marker, Docling, PaddleOCR, DeepSeek-OCR, Tesseract, MinerU, Unstructured, and more
+- 📱 **Modern React UI**: Beautiful, responsive design with Tailwind CSS
+- 🎯 **Multiple Output Formats**: Markdown, JSON, and Plain Text
+- ⏱️ **Performance Benchmarking**: Real-time timer shows conversion speed for each library
+- 👁️ **Live Preview**: View converted content with syntax highlighting
+- 🔄 **Library Status Dashboard**: See which libraries are available/unavailable with error messages
+- 💾 **Easy Download**: Download results in your preferred format
+- 🐳 **Docker Support**: One-command deployment
+- 🔗 **REST API**: Programmatic access to conversion features
+- 🌙 **Dark Mode Ready**: Works seamlessly in light and dark themes
 
-## Libraries Supported
+## 📚 Supported Libraries
 
-1. **pymupdf4llm** (`>=0.0.26`) - Fast PDF text extraction with PyMuPDF
-2. **markitdown** (`>=0.1.2`) - Microsoft's document conversion tool
-3. **marker** (`>=1.8.1`) - Advanced PDF to Markdown conversion with ML
-4. **docling** (`>=2.41.0`) - IBM's document intelligence platform
+| Library | Version | Type | Status | Notes |
+|---------|---------|------|--------|-------|
+| **pymupdf4llm** | >=0.0.26 | Text Extraction | Fast | Best for simple PDFs |
+| **markitdown** | >=0.1.2 | Markdown | Balanced | Microsoft's conversion tool |
+| **marker** | >=1.8.1 | Advanced ML | High Quality | Excellent results, slower |
+| **docling** | >=2.41.0 | Document Intelligence | Advanced | IBM's document platform |
+| **paddleocr** | >=3.3.2 | OCR | Accurate | Great for scanned PDFs |
+| **unstructured** | >=0.15.0 | Document Parsing | Smart | Intelligent element extraction |
+| **deepseekocr** | Latest | GPU OCR | Fast (GPU only) | Requires CUDA GPU |
+| **pytesseract** | >=0.3.10 | OCR | Classic | Tesseract-based (requires system binary) |
+| **mineru** | >=2.6.4 | Advanced | Premium | Separate venv installation |
 
-## Installation
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- UV (fast Python package installer)
+- **Python**: 3.13+
+- **UV**: Fast Python package manager ([install](https://docs.astral.sh/uv/getting-started/installation/))
+- **Node.js**: 20+ (for frontend development)
+- **Docker** (optional): For containerized deployment
 
-### Setup
+### Installation
 
-1. **Clone or download the project files**
+1. **Clone the repository**:
+```bash
+git clone https://github.com/aksarav/pdfstract.git
+cd pdfstract
+```
 
-2. **Install dependencies**:
-   ```bash
-   uv sync
-   ```
-   
-   Or if you don't have a virtual environment:
-   ```bash
-   uv pip install -r requirements.txt
-   ```
+2. **Install Python dependencies**:
+```bash
+uv sync
+```
 
-   Note: Some libraries may require additional system dependencies:
-   
-   - **For marker**: May require additional ML dependencies
-   - **For docling**: May require specific Python versions and dependencies
-   - **For pymupdf4llm**: Should work out of the box
-   - **For markitdown**: May require additional dependencies for certain file types
+3. **Install frontend dependencies**:
+```bash
+cd frontend
+npm install
+cd ..
+```
 
-3. **Verify installation** (optional):
-   ```bash
-   uv run python -c "import fastapi; print('FastAPI installed successfully')"
-   ```
+4. **Setup MinerU (optional)**:
+```bash
+bash scripts/setup-mineru.sh
+```
 
-## Running the Application
+### Running Locally
 
-1. **Start the server**:
-   ```bash
-   uv run python main.py
-   ```
-   
-   Or alternatively:
-   ```bash
-   uv run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-   ```
+**Option 1: Development Mode with Auto-reload**
+```bash
+uv run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
 
-2. **Open your browser** and navigate to:
-   ```
-   http://localhost:8000
-   ```
+**Option 2: Using Python directly**
+```bash
+uv run python main.py
+```
 
-3. **Use the application**:
-   - Select a conversion library from the dropdown
-   - Upload a PDF file (drag-and-drop or click to select)
-   - Click "Convert to Markdown"
-   - View the converted result
+**Open your browser**:
+```
+http://localhost:8000
+```
 
-## Running with Docker
-
-This project includes a `Dockerfile` and `docker-compose.yml` for easy containerization.
-
-1.  **Build and run the container**:
-    ```bash
-    docker-compose up --build
-    ```
-
-2.  **Open your browser** and navigate to:
-    ```
-    http://localhost:8000
-    ```
-
-This will start the application inside a Docker container, accessible on port 8000.
-
-## API Endpoints
-
-- `GET /` - Main web interface
-- `GET /health` - Health check endpoint
-- `GET /libraries` - Get available conversion libraries
-- `POST /convert` - Convert PDF to Markdown
-
-### API Usage Example
+### Running with Docker
 
 ```bash
-# Check available libraries
-curl http://localhost:8000/libraries
+docker-compose up --build
+```
 
-# Convert a PDF file
+The application will be available at `http://localhost:8000`
+
+### Running with VS Code Debugger
+
+1. Press `F5` or go to Run → Start Debugging
+2. The debugger will use the configuration in `.vscode/launch.json`
+3. Set breakpoints and debug your FastAPI backend
+
+## 📖 Usage
+
+### Web Interface
+
+1. **Upload PDF**: Drag & drop or click to select a PDF file
+2. **Select Library**: Choose your preferred conversion library from the dropdown
+3. **Choose Format**: Select output format (Markdown, JSON, or Plain Text)
+4. **Convert**: Click "Convert PDF" button
+5. **View Results**: 
+   - See original PDF on the left
+   - View converted content on the right
+   - Switch between "Source" and "Preview" tabs
+6. **Download**: Click "Download" to save the results
+7. **Benchmark**: Check the time taken to compare library performance
+
+### API Usage
+
+**Check available libraries**:
+```bash
+curl http://localhost:8000/libraries
+```
+
+Response:
+```json
+{
+  "libraries": [
+    {
+      "name": "pymupdf4llm",
+      "available": true,
+      "error": null
+    },
+    {
+      "name": "deepseekocr",
+      "available": false,
+      "error": "GPU required but not available"
+    }
+  ]
+}
+```
+
+**Convert a PDF**:
+```bash
 curl -X POST \
-  -F "file=@your-file.pdf" \
-  -F "library=pymupdf4llm" \
+  -F "file=@sample.pdf" \
+  -F "library=unstructured" \
+  -F "output_format=markdown" \
   http://localhost:8000/convert
 ```
 
-## Troubleshooting
+Response:
+```json
+{
+  "success": true,
+  "library_used": "unstructured",
+  "filename": "sample.pdf",
+  "format": "markdown",
+  "content": "# Document Title\n\n... extracted markdown ..."
+}
+```
 
-### Library Installation Issues
+## API Endpoints
 
-If you encounter issues with specific libraries:
+| Endpoint | Method | Description | Parameters |
+|----------|--------|-------------|-----------|
+| `/` | GET | Web interface | - |
+| `/health` | GET | Health check | - |
+| `/libraries` | GET | List available libraries | - |
+| `/convert` | POST | Convert PDF | `file`, `library`, `output_format` |
 
-1. **pymupdf4llm**: Usually installs without issues
-   ```bash
-   uv add pymupdf4llm
-   ```
+## 🏗️ Project Structure
 
-2. **markitdown**: May need Microsoft Build Tools on Windows
-   ```bash
-   uv add markitdown
-   ```
+```
+pdfstract/
+├── main.py                          # FastAPI application
+├── pyproject.toml                   # Python dependencies (uv)
+├── uv.lock                          # Locked dependencies
+├── Dockerfile                       # Docker configuration
+├── docker-compose.yml               # Docker compose setup
+├── README.md                        # This file
+│
+├── frontend/                        # React application
+│   ├── src/
+│   │   ├── App.jsx                 # Main React component
+│   │   ├── components/
+│   │   │   └── ui/                 # UI components (button, card, etc.)
+│   │   └── index.css               # Global styles
+│   ├── vite.config.js              # Vite configuration
+│   ├── tailwind.config.js          # Tailwind CSS config
+│   ├── package.json                # Node dependencies
+│   └── index.html                  # HTML entry point
+│
+├── services/                        # Backend services
+│   ├── ocrfactory.py               # Converter factory & registry
+│   ├── base.py                     # Base converter class
+│   ├── logger.py                   # Logging configuration
+│   └── converters/                 # Converter implementations
+│       ├── pymupdf4llm_converter.py
+│       ├── unstructured_converter.py
+│       ├── mineru_converter.py
+│       ├── marker_converter.py
+│       ├── paddleocr_converter.py
+│       └── ... (more converters)
+│
+├── scripts/
+│   └── setup-mineru.sh             # MinerU setup script
+│
+├── templates/                       # Legacy templates
+│   └── index.html
+│
+├── uploads/                         # Temporary file storage
+└── .vscode/
+    └── launch.json                 # VS Code debugger config
+```
 
-3. **marker**: Requires additional ML dependencies
-   ```bash
-   uv add marker-pdf
-   ```
+## 🔧 Configuration
 
-4. **docling**: May have specific version requirements
-   ```bash
-   uv add docling
-   ```
+### Environment Variables
+
+Currently, no environment variables are required. The application is configured via:
+- `main.py`: Core FastAPI setup
+- `pyproject.toml`: Python dependencies
+- `docker-compose.yml`: Docker configuration
+
+### Customization
+
+**Add a new converter**:
+
+1. Create a new file in `services/converters/`:
+```python
+from services.base import PDFConverter
+
+class MyConverter(PDFConverter):
+    @property
+    def name(self) -> str:
+        return "myconverter"
+    
+    @property
+    def available(self) -> bool:
+        return True
+    
+    async def convert_to_md(self, file_path: str) -> str:
+        # Implementation
+        pass
+```
+
+2. Register in `services/ocrfactory.py`:
+```python
+from services.converters.myconverter import MyConverter
+
+# In _register_default_converters():
+converters.append(MyConverter())
+
+# In list_all_converters():
+all_converters.append("myconverter")
+```
+
+## 🐛 Troubleshooting
 
 ### Common Issues
 
-- **"Library not available"**: The library failed to import. Check the installation.
-- **"Conversion failed"**: The selected library couldn't process your PDF. Try a different library.
-- **Large file timeout**: Some libraries may take longer for large files.
+**Issue**: Library shows as unavailable
+- **Solution**: Check dependencies with `uv sync` and verify system requirements
 
-### Performance Tips
+**Issue**: MinerU not working
+- **Solution**: Run `bash scripts/setup-mineru.sh` to set up the separate environment
 
-- **pymupdf4llm**: Fastest for simple text extraction
-- **markitdown**: Good balance of speed and quality
-- **marker**: Best quality but slower, especially on first run
-- **docling**: Advanced features but may be slower
+**Issue**: DeepSeek-OCR unavailable
+- **Solution**: Requires CUDA GPU. Install CUDA toolkit or use CPU-only alternatives
 
-## Development
+**Issue**: Docker container can't find dependencies
+- **Solution**: Rebuild with `docker-compose up --build` (no cache)
 
-### Project Structure
+**Issue**: Large PDF timeout
+- **Solution**: Some libraries (marker, unstructured) are slower. Try pymupdf4llm for faster processing
 
+### System Requirements
+
+**For OCR libraries** (PaddleOCR, Tesseract, DeepSeek-OCR):
+- macOS/Linux: System libraries may be needed
+- Windows: May require Visual C++ build tools
+
+**For MinerU**:
+- Runs in isolated venv to avoid dependency conflicts
+- Requires: Python 3.13, sufficient disk space (~2GB)
+
+## 📊 Performance Comparison
+
+Use the built-in timer feature to benchmark:
+
+| Library | Speed | Quality | Best For |
+|---------|-------|---------|----------|
+| pymupdf4llm | ⚡⚡⚡ | ⭐⭐ | Simple text extraction |
+| unstructured | ⚡⚡ | ⭐⭐⭐ | Complex layouts |
+| markitdown | ⚡⚡ | ⭐⭐⭐ | Balanced performance |
+| marker | ⚡ | ⭐⭐⭐⭐ | Highest quality (ML-based) |
+| docling | ⚡ | ⭐⭐⭐⭐ | Document intelligence |
+| paddleocr | ⚡ | ⭐⭐⭐ | Scanned PDFs |
+| deepseekocr | ⚡ | ⭐⭐⭐ | Scanned PDFs |
+| pytesseract | ⚡ | ⭐⭐⭐ | Scanned PDFs |
+| mineru | ⚡ | ⭐⭐⭐ | Scanned PDFs |
+
+**NOTE**: The performance comparison is based on the performance of the libraries when used with the default settings of the application. The performance may vary depending on the complexity of the PDF and the settings of the library.
+
+## 🔐 Security
+
+- File uploads are stored temporarily and deleted after conversion
+- No data is persisted or logged
+- Use HTTPS in production
+- API endpoints are not authenticated (add authentication for production)
+
+## 📝 Development
+
+### Frontend Development
+
+```bash
+cd frontend
+npm run dev
 ```
-pdftomd-ui/
-├── main.py              # FastAPI application
-├── requirements.txt     # Python dependencies
-├── templates/
-│   └── index.html      # Web interface
-├── uploads/            # Temporary upload directory (auto-created)
-└── README.md           # This file
+
+Frontend will hot-reload at `http://localhost:5173`
+
+### Debug Backend
+
+Use VS Code's Run & Debug feature (F5) configured in `.vscode/launch.json`
+
+### Add Frontend Dependencies
+
+```bash
+cd frontend
+npm install <package-name>
 ```
 
-### Adding New Libraries
+## 🤝 Contributing
 
-To add support for additional conversion libraries:
+Contributions are welcome! Please:
 
-1. Add the library to `requirements.txt`
-2. Import it in `main.py` with try/except
-3. Add it to the `get_available_libraries()` function
-4. Create a conversion function following the existing pattern
-5. Add it to the conversion logic in `/convert` endpoint
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-## License
+## 📄 License
 
 This project is provided as-is for educational and development purposes.
 
-## Contributing
+## 🌟 Features Roadmap
 
-Feel free to submit issues and enhancement requests! 
+- [ ] Batch PDF conversion
+- [ ] Convert and Compare multiple PDFs and Generate a Report
+- [ ] Conversion history and Task Management
+- [ ] Cloud storage integration - Read from and write to cloud storage
+- [ ] REST API documentation (Swagger UI)
+
+## 📞 Support
+
+If you encounter issues or have questions:
+
+1. Check the [Troubleshooting](#-troubleshooting) section
+2. Review converter-specific documentation
+3. Open an issue on GitHub
+
+## 🌟 Please leave a star if you find this project useful
+
+## 🙏 Acknowledgments
+
+- **FastAPI**: Modern Python web framework
+- **React**: UI library
+- **Tailwind CSS**: Utility-first CSS framework
+- **Lucide Icons**: Beautiful icon library
+- All the amazing PDF extraction libraries (PyMuPDF, Marker, Docling, etc.)
+
+---
+
+**Made with ❤️ for PDF enthusiasts **

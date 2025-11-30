@@ -1,3 +1,7 @@
+required-environments = [
+    "python_full_version >= '3.13' and platform_machine == 'x86_64'"
+]
+
 [project]
 name = "pdftomd-ui"
 version = "0.1.0"
@@ -11,9 +15,29 @@ dependencies = [
     "jinja2>=3.1.6",
     "marker-pdf>=1.8.1",
     "markitdown[pdf]>=0.1.2",
+    "paddleocr[all]>=3.3.2",
+    "paddlepaddle>=3.2.2; platform_machine != 'aarch64'",
+    "pdf2image>=1.17.0",
+    "pillow>=10.4.0",
     "pymupdf4llm>=0.0.26",
     "pypdf2>=3.0.1",
     "python-magic>=0.4.27",
     "python-multipart>=0.0.20",
     "uvicorn[standard]>=0.35.0",
+    # Logging
+    "loguru>=0.7.2",
+    # DeepSeek-OCR dependencies (transformers-based, works on CPU or GPU)
+    "transformers>=4.51.1",
+    "torch>=2.0.0",
+    "addict>=2.4.0",
+    "matplotlib>=3.10.7",
+    "easydict>=1.13",
+    # For Tesseract OCR (requires system tesseract binary: e.g. brew/apt install tesseract)
+    "pytesseract>=0.3.10",
+    # Unstructured.io for document extraction
+    "unstructured[pdf]>=0.15.0",
 ]
+
+[project.optional-dependencies]
+# mineru is installed in a separate venv (mineru_env) via scripts/setup-mineru.sh
+# to avoid dependency conflicts with marker-pdf (pillow version incompatibility)

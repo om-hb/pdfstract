@@ -1,7 +1,25 @@
-version: '3.8'
-
 services:
   web:
-    build: .
+    # NOTE: For M1/M2/M3 Mac - using native ARM64 for best performance
+    # For x86_64 systems - uncomment the line below and rebuild
+    # platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app
+      - /app/.venv
+      - /app/mineru_env
+    environment:
+      - UVICORN_RELOAD=1
+    # Resource limits for Apple Silicon
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
