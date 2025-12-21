@@ -95,3 +95,4 @@ class PyTesseractConverter(PDFConverter):
         return text
 
 
+

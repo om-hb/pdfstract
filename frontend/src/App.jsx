@@ -67,14 +67,6 @@ function App() {
     toastTimerRef.current = setTimeout(() => setToastMessage(null), 5000)
   }
 
-  const showMinerUToast = (message) => {
-    if (toastTimerRef.current) {
-      clearTimeout(toastTimerRef.current)
-    }
-    setToastMessage(message || 'MinerU requires the mineru CLI from pip (mineru[core])')
-    toastTimerRef.current = setTimeout(() => setToastMessage(null), 5000)
-  }
-
   useEffect(() => {
     return () => {
       if (toastTimerRef.current) {
@@ -123,8 +115,6 @@ function App() {
     const lib = libraries.find((item) => item.name === value)
     if (lib && lib.name === 'deepseekocr') {
       showGPUToast(lib.error || 'DeepSeek-OCR requires a CUDA-enabled GPU')
-    } else if (lib && lib.name === 'mineru' && !lib.available) {
-      showMinerUToast(lib.error || 'MinerU requires mineru[core] installed via uv sync')
     } else {
       if (toastTimerRef.current) {
         clearTimeout(toastTimerRef.current)
@@ -608,11 +598,6 @@ function App() {
                         {lib.name === 'deepseekocr' && (
                           <Badge variant="outline" className="text-[10px]">
                             GPU only
-                          </Badge>
-                        )}
-                        {lib.name === 'mineru' && (
-                          <Badge variant="outline" className="text-[10px]">
-                            CLI
                           </Badge>
                         )}
                       </div>

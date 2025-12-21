@@ -1,57 +1,30 @@
 #!/usr/bin/env python3
 """
-Simple script to run the PDF to Markdown converter application.
+PDFStract - Dual mode application (Web UI or CLI)
+Choose mode: CLI (default) or Web
 """
 
-import subprocess
 import sys
 import os
 
-def check_dependencies():
-    """Check if required dependencies are installed."""
-    try:
-        import fastapi
-        import uvicorn
-        print("✅ Core dependencies found")
-        return True
-    except ImportError as e:
-        print(f"❌ Missing dependencies: {e}")
-        print("Please run: pip install -r requirements.txt")
-        return False
-
 def main():
-    """Main function to run the application."""
-    print("🚀 PDF to Markdown Converter")
-    print("=" * 40)
+    """Entry point - determine if running in CLI or Web mode"""
     
-    # Check if we're in the right directory
-    if not os.path.exists("main.py"):
-        print("❌ main.py not found. Please run this script from the project directory.")
-        sys.exit(1)
-    
-    # Check dependencies
-    if not check_dependencies():
-        sys.exit(1)
-    
-    # Start the server
-    print("🔧 Starting the server...")
-    print("📱 Open your browser to: http://localhost:8000")
-    print("⏹️  Press Ctrl+C to stop the server")
-    print("=" * 40)
-    
-    try:
-        subprocess.run([
-            sys.executable, "-m", "uvicorn", 
-            "main:app", 
-            "--host", "0.0.0.0", 
-            "--port", "8000", 
-            "--reload"
-        ])
-    except KeyboardInterrupt:
-        print("\n👋 Server stopped. Goodbye!")
-    except Exception as e:
-        print(f"❌ Error starting server: {e}")
-        sys.exit(1)
+    # If called with 'web' argument or no arguments and CLI args present, run web
+    if len(sys.argv) > 1 and sys.argv[1] == 'web':
+        # Run FastAPI web server
+        print("Starting PDFStract Web UI on http://localhost:8000")
+        import uvicorn
+        uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    elif len(sys.argv) == 1 or (len(sys.argv) > 1 and sys.argv[1] in ['--help', '-h', '--version']):
+        # Run CLI
+        from cli import pdfstract
+        sys.argv = [sys.argv[0]] + sys.argv[2:] if len(sys.argv) > 1 and sys.argv[1] == 'web' else sys.argv
+        pdfstract()
+    else:
+        # Run CLI with passed arguments
+        from cli import pdfstract
+        pdfstract()
 
-if __name__ == "__main__":
-    main() 
+if __name__ == '__main__':
+    main()

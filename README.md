@@ -12,6 +12,7 @@ A modern web application for converting PDFs to multiple formats using various s
 
 - 🚀 **10+ Conversion Libraries**: PyMuPDF4LLM, MarkItDown, Marker, Docling, PaddleOCR, DeepSeek-OCR, Tesseract, MinerU, Unstructured, and more
 - 📱 **Modern React UI**: Beautiful, responsive design with Tailwind CSS
+- 💻 **Command-Line Interface**: Full CLI with batch processing, multi-library comparison, and automation
 - 🎯 **Multiple Output Formats**: Markdown, JSON, and Plain Text
 - ⏱️ **Performance Benchmarking**: Real-time timer shows conversion speed for each library
 - 👁️ **Live Preview**: View converted content with syntax highlighting
@@ -19,6 +20,7 @@ A modern web application for converting PDFs to multiple formats using various s
 - 💾 **Easy Download**: Download results in your preferred format
 - 🐳 **Docker Support**: One-command deployment
 - 🔗 **REST API**: Programmatic access to conversion features
+- ⚡ **Batch Processing**: Parallel conversion of 100+ PDFs with detailed reporting
 - 🌙 **Dark Mode Ready**: Works seamlessly in light and dark themes
 
 ## 📚 Supported Libraries
@@ -33,13 +35,12 @@ A modern web application for converting PDFs to multiple formats using various s
 | **unstructured** | >=0.15.0 | Document Parsing | Smart | Intelligent element extraction |
 | **deepseekocr** | Latest | GPU OCR | Fast (GPU only) | Requires CUDA GPU |
 | **pytesseract** | >=0.3.10 | OCR | Classic | Tesseract-based (requires system binary) |
-| **mineru** | >=2.6.4 | Advanced | Premium | Separate venv installation |
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- **Python**: 3.13+
+- **Python**: 3.11+
 - **UV**: Fast Python package manager ([install](https://docs.astral.sh/uv/getting-started/installation/))
 - **Node.js**: 20+ (for frontend development)
 - **Docker** (optional): For containerized deployment
@@ -62,11 +63,6 @@ uv sync
 cd frontend
 npm install
 cd ..
-```
-
-4. **Setup MinerU (optional)**:
-```bash
-bash scripts/setup-mineru.sh
 ```
 
 ### Running Locally
@@ -111,6 +107,48 @@ The application will be available at `http://localhost:8000`
 1. Press `F5` or go to Run → Start Debugging
 2. The debugger will use the configuration in `.vscode/launch.json`
 3. Set breakpoints and debug your FastAPI backend
+
+## 🖥️ Command-Line Interface (CLI)
+
+PDFStract includes a powerful CLI for batch processing and automation.
+
+### Quick CLI Examples
+
+```bash
+# List available libraries
+pdfstract libs
+
+# Convert a single PDF
+pdfstract convert document.pdf --library unstructured --output result.md
+
+# Compare multiple libraries on one PDF
+pdfstract compare sample.pdf -l unstructured -l marker -l pymupdf4llm --output ./comparison
+
+# Batch convert 100+ PDFs in parallel
+pdfstract batch ./documents --library unstructured --output ./converted --parallel 4
+
+# Test which library works best on your corpus
+pdfstract batch-compare ./papers -l marker -l unstructured --max-files 50 --output ./test
+```
+
+### CLI Features
+
+✨ **Full Features:**
+- Single file conversion
+- Multi-library comparison
+- Parallel batch processing (1-16 workers)
+- Batch quality testing across corpus
+- JSON reporting with detailed statistics
+- Error handling and retry options
+- Progress indicators and rich formatting
+
+📊 **Batch Processing:**
+- Convert 1000+ PDFs with parallel workers
+- Detailed JSON reports (success rate, per-file status)
+- Automatic error handling and logging
+- Perfect for production jobs and legacy migrations
+
+→ **[Full CLI Documentation](CLI_README.md)** - See complete guide with real-world examples
 
 ## 📖 Usage
 
@@ -185,6 +223,18 @@ Response:
   "content": "# Document Title\n\n... extracted markdown ..."
 }
 ```
+
+**For Batch Processing:** Use the CLI instead
+```bash
+pdfstract batch ./documents --library unstructured --output ./converted --parallel 4
+```
+
+Advantages of CLI for batch jobs:
+- Parallel processing with configurable workers
+- JSON report with statistics (success rate, per-file status)
+- Error handling and retry options
+- Perfect for production automation
+- See [CLI_README.md](CLI_README.md) for full batch documentation
 
 ## API Endpoints
 
@@ -322,9 +372,6 @@ all_converters.append("myconverter")
 **Issue**: Library shows as unavailable
 - **Solution**: Check dependencies with `uv sync` and verify system requirements
 
-**Issue**: MinerU not working
-- **Solution**: Run `bash scripts/setup-mineru.sh` to set up the separate environment
-
 **Issue**: DeepSeek-OCR unavailable
 - **Solution**: Requires CUDA GPU. Install CUDA toolkit or use CPU-only alternatives
 
@@ -340,10 +387,6 @@ all_converters.append("myconverter")
 - macOS/Linux: System libraries may be needed
 - Windows: May require Visual C++ build tools
 
-**For MinerU**:
-- Runs in isolated venv to avoid dependency conflicts
-- Requires: Python 3.13, sufficient disk space (~2GB)
-
 ## 📊 Performance Comparison
 
 Use the built-in timer feature to benchmark:
@@ -358,7 +401,6 @@ Use the built-in timer feature to benchmark:
 | paddleocr | ⚡ | ⭐⭐⭐ | Scanned PDFs |
 | deepseekocr | ⚡ | ⭐⭐⭐ | Scanned PDFs |
 | pytesseract | ⚡ | ⭐⭐⭐ | Scanned PDFs |
-| mineru | ⚡ | ⭐⭐⭐ | Scanned PDFs |
 
 **NOTE**: The performance comparison is based on the performance of the libraries when used with the default settings of the application. The performance may vary depending on the complexity of the PDF and the settings of the library.
 

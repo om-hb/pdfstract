@@ -47,16 +47,16 @@ queue_manager = QueueManager(db_service)
 results_manager = ResultsManager()
 
 @app.get("/")
-async def read_root(request: Request = None):
+async def read_root():
     """Serve the React app"""
     index_path = static_dir / "index.html"
     if index_path.exists():
         return FileResponse(index_path)
     else:
-        # Fallback to old template if React app not built
-        from fastapi.templating import Jinja2Templates
-        templates = Jinja2Templates(directory="templates")
-        return templates.TemplateResponse("index.html", {"request": request or Request})
+        raise HTTPException(
+            status_code=404,
+            detail="React app not built. Run 'cd frontend && npm run build' to build the frontend."
+        )
 
 @app.get("/health")
 async def health_check():

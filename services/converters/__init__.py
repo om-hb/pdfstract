@@ -5,7 +5,6 @@ from services.converters.docling_converter import DoclingConverter
 from services.converters.paddleocr_converter import PaddleOCRConverter
 from services.converters.deepseekocr_transformers_converter import DeepSeekOCRTransformersConverter
 from services.converters.pytesseract_converter import PyTesseractConverter
-from services.converters.mineru_converter import MinerUConverter
 
 __all__ = [
     "PyMuPDF4LLMConverter",
@@ -15,6 +14,5 @@ __all__ = [
     "PaddleOCRConverter",
     "DeepSeekOCRTransformersConverter",
     "PyTesseractConverter",
-    "MinerUConverter",
 ]
 
