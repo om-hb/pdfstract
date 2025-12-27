@@ -1,12 +1,46 @@
-# PDFStract - Extract Data from PDF and Benchmark - CLI - WEBUI - API
+# PDFStract — PDF Extraction & Benchmarking for RAG and AI Pipelines
 
-A modern web application for converting PDFs to multiple formats using various state-of-the-art extraction libraries. Built with **FastAPI** backend and **React** frontend with a beautiful, responsive UI.
+CLI • Web UI • API — Extract structured data from PDFs, compare OCR & document-processing libraries, and benchmark conversion quality before building your RAG or AI pipelines.
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Project-PDFStract-blue" />
+  <img src="https://img.shields.io/badge/Type-CLI%20%7C%20Web%20UI%20%7C%20API-green" />
+  <img src="https://img.shields.io/github/stars/AKSarav/pdfstract?style=social" />
+  <img src="https://img.shields.io/github/license/AKSarav/pdfstract" />
+</p>
+
+<p align="center">
+  <b>Supports:</b> PyMuPDF4LLM • Unstructured • Marker • Docling • Tesseract OCR • More coming soon
+</p>
+
+---
+
+### 🚀 What is PDFStract?
+
+PDFStract is a developer toolkit to:
+
+- 🧾 Extract structured text, tables, and metadata from PDFs  
+- 🔍 Benchmark & compare multiple PDF/OCR extraction libraries side-by-side  
+- 🧪 Visualize results before integrating into RAG / AI pipelines  
+- 🌐 Run as a CLI, Web UI, or API service
+
+Use it to choose the **best extraction engine for your dataset** instead of guessing.
+
+
+---
+
+# WEB UI 
+
+PDFstract can be run as a local web ui - it comes with FastAPI backend and react frontend 
+
+Here are some quick screenshots of the Web UI
 
 ![UI Screenshot](UI.png)
 
 ![UI Screenshot 2](UI2.png)
 
 ![UI Screenshot 3](UI3.png)
+
 
 ## ✨ Features
 
@@ -102,13 +136,9 @@ docker-compose up --build
 
 The application will be available at `http://localhost:8000`
 
-### Running with VS Code Debugger
+---
 
-1. Press `F5` or go to Run → Start Debugging
-2. The debugger will use the configuration in `.vscode/launch.json`
-3. Set breakpoints and debug your FastAPI backend
-
-## 🖥️ Command-Line Interface (CLI)
+# 🖥️ Command-Line Interface (CLI)
 
 PDFStract includes a powerful CLI for batch processing and automation.
 
@@ -150,36 +180,9 @@ pdfstract batch-compare ./papers -l marker -l unstructured --max-files 50 --outp
 
 → **[Full CLI Documentation](CLI_README.md)** - See complete guide with real-world examples
 
-## 📖 Usage
+---
 
-### Web Interface (React Frontend)
-
-**Single Conversion**:
-1. **Upload PDF**: Drag & drop or click to select a PDF file
-2. **Select Library**: Choose your preferred conversion library from the dropdown
-3. **Choose Format**: Select output format (Markdown, JSON, or Plain Text)
-4. **Convert**: Click "Convert PDF" button
-5. **View Results**: 
-   - See original PDF on the left
-   - View converted content on the right
-   - Switch between "Source" and "Preview" tabs
-6. **Download**: Click "Download" to save the results
-7. **Performance**: Real-time timer shows conversion speed
-
-**Compare Multiple Models** (New Feature):
-1. **Upload PDF**: Select a PDF file
-2. **Click "Compare Models"**: Opens library selection modal
-3. **Select Libraries**: Choose 1-3 converters to compare
-4. **Watch Progress**: Real-time progress bar shows which models are running
-5. **View Results Grid**: See all conversions in a table with:
-   - Time taken for each
-   - Output file size
-   - Success/Failed/Timeout status
-6. **Expand Details**: Click a row to see full content
-7. **Download**: Download individual or all results
-8. **History**: Recent comparisons shown in left sidebar
-
-### API Usage
+# API 
 
 **Check available libraries**:
 ```bash
@@ -245,149 +248,8 @@ Advantages of CLI for batch jobs:
 | `/libraries` | GET | List available libraries | - |
 | `/convert` | POST | Convert PDF | `file`, `library`, `output_format` |
 
-## 🏗️ Project Structure
 
-```
-pdfstract/
-├── main.py                          # FastAPI application with endpoints
-├── pyproject.toml                   # Python dependencies (uv)
-├── uv.lock                          # Locked dependencies
-├── Dockerfile                       # Docker configuration
-├── docker-compose.yml               # Docker compose setup
-├── README.md                        # This file
-│
-├── frontend/                        # React application (Vite + Tailwind)
-│   ├── src/
-│   │   ├── App.jsx                 # Main React component & routes
-│   │   ├── components/
-│   │   │   ├── CompareModal.jsx           # Library selection modal
-│   │   │   ├── RecentComparisons.jsx      # History sidebar
-│   │   │   ├── ComparisonResults.jsx      # Results display grid
-│   │   │   └── ui/                       # UI components (button, card, etc.)
-│   │   ├── index.css               # Global styles
-│   │   └── main.jsx                # React entry point
-│   ├── dist/                       # Built frontend (production)
-│   ├── vite.config.js              # Vite configuration & proxy setup
-│   ├── tailwind.config.js          # Tailwind CSS config
-│   ├── package.json                # Node dependencies
-│   └── index.html                  # HTML entry point
-│
-├── services/                        # Backend services
-│   ├── db_service.py               # SQLite database operations
-│   ├── queue_manager.py            # Parallel execution (max 3)
-│   ├── results_manager.py          # File storage for results
-│   ├── ocrfactory.py               # Converter factory & registry
-│   ├── base.py                     # Base converter class
-│   ├── logger.py                   # Logging configuration
-│   └── converters/                 # Converter implementations
-│       ├── pymupdf4llm_converter.py
-│       ├── unstructured_converter.py
-│       ├── mineru_converter.py
-│       ├── marker_converter.py
-│       ├── paddleocr_converter.py
-│       └── ... (more converters)
-│
-├── scripts/
-│   └── setup-mineru.sh             # MinerU separate venv setup
-│
-├── data/
-│   └── tasks.db                    # SQLite database (auto-created)
-│
-├── results/                        # Conversion results storage
-│   └── task_*/                     # Per-task directories
-│
-└── .vscode/
-    └── launch.json                 # VS Code debugger config
-```
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Currently, no environment variables are required. The application is configured via:
-- `main.py`: Core FastAPI setup
-- `pyproject.toml`: Python dependencies
-- `docker-compose.yml`: Docker configuration
-
-### Frontend Configuration
-
-The React frontend is configured via:
-- `frontend/vite.config.js`: Vite build config with API proxy
-- `frontend/tailwind.config.js`: Tailwind CSS theming
-- `frontend/package.json`: Node dependencies
-
-### API Proxy Setup
-
-The frontend development server proxies API calls to the backend:
-```javascript
-// frontend/vite.config.js
-server: {
-  proxy: {
-    '/libraries': { target: 'http://localhost:8000' },
-    '/convert': { target: 'http://localhost:8000' },
-    '/compare': { target: 'http://localhost:8000' },
-    '/history': { target: 'http://localhost:8000' },
-    '/health': { target: 'http://localhost:8000' },
-  }
-}
-```
-
-### Customization
-
-**Add a new converter**:
-
-1. Create a new file in `services/converters/`:
-```python
-from services.base import PDFConverter
-
-class MyConverter(PDFConverter):
-    @property
-    def name(self) -> str:
-        return "myconverter"
-    
-    @property
-    def available(self) -> bool:
-        return True
-    
-    async def convert_to_md(self, file_path: str) -> str:
-        # Implementation
-        pass
-```
-
-2. Register in `services/ocrfactory.py`:
-```python
-from services.converters.myconverter import MyConverter
-
-# In _register_default_converters():
-converters.append(MyConverter())
-
-# In list_all_converters():
-all_converters.append("myconverter")
-```
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Issue**: Library shows as unavailable
-- **Solution**: Check dependencies with `uv sync` and verify system requirements
-
-**Issue**: DeepSeek-OCR unavailable
-- **Solution**: Requires CUDA GPU. Install CUDA toolkit or use CPU-only alternatives
-
-**Issue**: Docker container can't find dependencies
-- **Solution**: Rebuild with `docker-compose up --build` (no cache)
-
-**Issue**: Large PDF timeout
-- **Solution**: Some libraries (marker, unstructured) are slower. Try pymupdf4llm for faster processing
-
-### System Requirements
-
-**For OCR libraries** (PaddleOCR, Tesseract, DeepSeek-OCR):
-- macOS/Linux: System libraries may be needed
-- Windows: May require Visual C++ build tools
-
-## 📊 Performance Comparison
+## 📊 Performance Comparison ( Based on our evaluation )
 
 Use the built-in timer feature to benchmark:
 
@@ -411,39 +273,6 @@ Use the built-in timer feature to benchmark:
 - Use HTTPS in production
 - API endpoints are not authenticated (add authentication for production)
 
-## 📝 Development
-
-### Frontend Development (Hot Reload)
-
-```bash
-cd frontend
-npm run dev
-```
-
-Frontend will be available at `http://localhost:5173` with hot-reload enabled.
-
-### Backend Development (With Debugger)
-
-Use VS Code's Run & Debug feature:
-1. Press `F5` or go to Run → Start Debugging
-2. Breakpoints and debugging work via `.vscode/launch.json`
-3. Backend reloads on file changes via `--reload` flag
-
-### Adding Frontend Dependencies
-
-```bash
-cd frontend
-npm install <package-name>
-```
-
-### Building Frontend for Production
-
-```bash
-cd frontend
-npm run build
-```
-
-Output: `frontend/dist/` → Gets copied to `/app/static` in Docker
 
 ## 🤝 Contributing
 
@@ -454,17 +283,6 @@ Contributions are welcome! Please:
 3. Make your changes
 4. Submit a pull request
 
-## 📄 License
-
-This project is provided as-is for educational and development purposes.
-
-## 🌟 Features Roadmap
-
-- [ ] Batch PDF conversion
-- [ ] Convert and Compare multiple PDFs and Generate a Report
-- [ ] Conversion history and Task Management
-- [ ] Cloud storage integration - Read from and write to cloud storage
-- [ ] REST API documentation (Swagger UI)
 
 ## 📞 Support
 
