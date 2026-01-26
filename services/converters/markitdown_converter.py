@@ -1,5 +1,6 @@
 from typing import Dict, Any
 import re
+import asyncio
 from services.base import PDFConverter
 
 try:
@@ -28,7 +29,8 @@ class MarkItDownConverter(PDFConverter):
     async def convert_to_md(self, file_path: str) -> str:
         if not self.available:
             raise RuntimeError("markitdown is not available")
-        result = self._converter.convert(file_path)
+        # Run blocking operations in thread executor to avoid blocking the event loop
+        result = await asyncio.to_thread(self._converter.convert, file_path)
         return result.text_content
     
     async def convert_to_json(self, file_path: str) -> Dict[str, Any]:

@@ -1,5 +1,6 @@
 from typing import Dict, Any
 import re
+import asyncio
 from services.base import PDFConverter, OutputFormat
 
 try:
@@ -23,7 +24,8 @@ class PyMuPDF4LLMConverter(PDFConverter):
     async def convert_to_md(self, file_path: str) -> str:
         if not self.available:
             raise RuntimeError("pymupdf4llm is not available")
-        return pymupdf4llm.to_markdown(file_path)
+        # Run blocking operations in thread executor to avoid blocking the event loop
+        return await asyncio.to_thread(pymupdf4llm.to_markdown, file_path)
     
     async def convert_to_json(self, file_path: str) -> Dict[str, Any]:
         if not self.available:

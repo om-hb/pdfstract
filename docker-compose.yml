@@ -1,17 +1,17 @@
 services:
-  web:
+  backend:
     # NOTE: For M1/M2/M3 Mac - using native ARM64 for best performance
     # For x86_64 systems - uncomment the line below and rebuild
     # platform: linux/amd64
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.backend
     ports:
       - "8000:8000"
     volumes:
       - .:/app
       - /app/.venv
-      - /app/mineru_env
+      - model-cache:/root/.cache
     environment:
       - UVICORN_RELOAD=1
     # Resource limits for Apple Silicon
@@ -19,7 +19,28 @@ services:
       resources:
         limits:
           cpus: '2'
-          memory: 4G
+          memory: 8G
         reservations:
           cpus: '1'
           memory: 2G
+    networks:
+      - pdfstract-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - pdfstract-network
+
+networks:
+  pdfstract-network:
+    driver: bridge
+
+volumes:
+  model-cache:
+    driver: local

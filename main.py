@@ -1,13 +1,13 @@
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import Request
 import os
 import tempfile
 import asyncio
 import json
 import uuid
+import traceback
 from datetime import datetime
 from pathlib import Path
 
@@ -19,6 +19,23 @@ from services.queue_manager import QueueManager
 from services.results_manager import ResultsManager
 
 app = FastAPI(title="PDFStract - Unified PDF extraction wrapper", description="Convert PDF files to Markdown using various libraries")
+
+# Global exception handler to prevent crashes (but don't catch HTTPExceptions)
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Catch all unhandled exceptions to prevent process crashes"""
+    # Don't handle HTTPExceptions - let FastAPI handle those
+    if isinstance(exc, HTTPException):
+        raise exc
+    
+    error_msg = str(exc)
+    error_traceback = traceback.format_exc()
+    logger.error(f"Unhandled exception in {request.method} {request.url.path}: {error_msg}")
+    logger.error(f"Traceback: {error_traceback}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal server error: {error_msg}"}
+    )
 
 # CORS middleware for development
 app.add_middleware(
@@ -38,8 +55,14 @@ if static_dir.exists():
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Initialize factory (singleton pattern)
-factory = OCRFactory()
+# Lazy initialization - factory will be created on first use
+_factory = None
+def get_factory():
+    """Lazy factory initialization to avoid blocking startup with model downloads"""
+    global _factory
+    if _factory is None:
+        _factory = OCRFactory()
+    return _factory
 
 # Initialize comparison services
 db_service = DatabaseService()
@@ -66,7 +89,7 @@ async def health_check():
 @app.get("/libraries")
 async def get_available_libraries():
     """Get list of available conversion libraries"""
-    return {"libraries": factory.list_all_converters()}
+    return {"libraries": get_factory().list_all_converters()}
 
 @app.post("/convert")
 async def convert_pdf(
@@ -90,19 +113,34 @@ async def convert_pdf(
         )
     
     # Save uploaded file temporarily
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
-        content = await file.read()
-        temp_file.write(content)
-        temp_file_path = temp_file.name
-    
+    temp_file_path = None
     try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf', mode='wb') as temp_file:
+            content = await file.read()
+            temp_file.write(content)
+            temp_file.flush()  # Ensure all data is written to disk
+            temp_file_path = temp_file.name
+        
+        # Log file size for debugging
+        file_size = os.path.getsize(temp_file_path)
+        logger.info(f"Saved uploaded file to {temp_file_path}, size: {file_size} bytes")
+        
         logger.info(f"Starting conversion with library: {library}, format: {output_format}")
-        # Convert using factory
-        result = await factory.convert_async(
-            converter_name=library,
-            file_path=temp_file_path,
-            output_format=format_enum
-        )
+        
+        # Convert using factory with timeout protection
+        try:
+            result = await asyncio.wait_for(
+                get_factory().convert_async(
+                    converter_name=library,
+                    file_path=temp_file_path,
+                    output_format=format_enum
+                ),
+                timeout=300.0  # 5 minute timeout
+            )
+        except asyncio.TimeoutError:
+            error_msg = f"Conversion timed out after 5 minutes"
+            logger.error(error_msg)
+            raise HTTPException(status_code=504, detail=error_msg)
         
         logger.info(f"Conversion successful with {library}")
         response_data = {
@@ -119,6 +157,9 @@ async def convert_pdf(
         
         return JSONResponse(response_data)
     
+    except HTTPException:
+        # Re-raise HTTPExceptions as-is
+        raise
     except ValueError as e:
         # User-friendly errors (e.g., text-only PDF for DeepSeek-OCR)
         error_msg = str(e)
@@ -132,8 +173,11 @@ async def convert_pdf(
     
     finally:
         # Clean up temporary file
-        if os.path.exists(temp_file_path):
-            os.unlink(temp_file_path)
+        if temp_file_path and os.path.exists(temp_file_path):
+            try:
+                os.unlink(temp_file_path)
+            except Exception as cleanup_error:
+                logger.warning(f"Failed to cleanup temp file {temp_file_path}: {cleanup_error}")
 
 
 @app.post("/compare")
@@ -375,7 +419,7 @@ async def _convert_single_library(task_id, library_name, file_path, output_forma
     
     try:
         # Get converter
-        converter = factory.get_converter(library_name)
+        converter = get_factory().get_converter(library_name)
         if not converter:
             raise ValueError(f"Converter {library_name} not available")
         
