@@ -1,4 +1,4 @@
-# PDFStract — The First Layer in Your RAG Pipeline 
+# PDFStract — The Extraction and Chunking Layer in Your RAG Pipeline 
 
 Convert PDFs into chunks and embeddings ready for retrieval-augmented generation.
 
